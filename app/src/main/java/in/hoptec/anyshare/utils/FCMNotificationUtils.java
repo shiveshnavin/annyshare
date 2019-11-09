@@ -1,0 +1,172 @@
+package in.hoptec.anyshare.utils;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import android.text.TextUtils;
+import android.util.Log;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import in.hoptec.anyshare.R;
+
+public  class FCMNotificationUtils {
+    private static final String TAG = FCMNotificationUtils.class.getCanonicalName();
+    private static Uri defaultSoundUri;
+    private static Bitmap icLauncher;
+    private static int notificationColor;
+    private String channelId;
+
+    private static NotificationCompat.Builder setNotificationStyle(NotificationCompat.Builder builder,
+                                                                   String imageURL,
+                                                                   String title,
+                                                                   String message) {
+        if (!TextUtils.isEmpty(imageURL)) {
+            NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle()
+                    .bigLargeIcon(icLauncher)
+                    .setSummaryText(message)
+                    .setBigContentTitle(title);
+            Bitmap bitmapFromUrl = getBitmapFromUrl(imageURL);
+            if (bitmapFromUrl != null) {
+                bigPictureStyle = bigPictureStyle
+                        .bigPicture(bitmapFromUrl);
+            }
+            builder.setStyle(bigPictureStyle);
+        } else {
+            builder.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
+        }
+        return builder;
+    }
+
+    private static Bitmap getBitmapFromUrl(String imageUrl) {
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            return BitmapFactory.decodeStream(input);
+
+        } catch (IOException e) {
+            Log.e(TAG, "getBitmapFromUrl: ", e);
+            return null;
+        }
+    }
+
+    private static NotificationManager getNotificationManager(Context context) {
+        return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
+    public int getSmallIcon() {
+        boolean useWhiteIcon = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
+        return useWhiteIcon ? R.drawable.ic_logo :  R.drawable.ic_logo;
+    }
+
+    public int getBigIcon() {
+        return R.mipmap.ic_launcher;
+    }
+    public NotificationCompat.Builder getNotificationBuilder(Context context,
+                                                             String title,
+                                                             String message,
+                                                             String imageURL,
+                                                             String channelId,
+                                                             PendingIntent pendingIntent) {
+
+        if (this.channelId == null)
+            this.channelId = ResourceUtils.getString(R.string.app_name);
+        if (defaultSoundUri == null)
+            defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        if (icLauncher == null) {
+            icLauncher = getBitmapFromDrawable(ResourceUtils.getDrawable(getBigIcon()));
+        }
+        if (notificationColor == 0) {
+            notificationColor = ResourceUtils.getColor(R.color.colorAccent);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, !TextUtils.isEmpty(channelId) ? channelId : this.channelId)
+                .setAutoCancel(true)
+                .setSmallIcon(getSmallIcon())
+                .setLargeIcon(icLauncher)
+                .setSound(defaultSoundUri)
+                .setColor(notificationColor)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setContentIntent(pendingIntent)
+                .setTicker(message);
+
+        return setNotificationStyle(builder, imageURL, title, message);
+    }
+
+    @NonNull
+    private Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bmp;
+    }
+
+    public void sendNotification(Context context, int NOTIFICATION_ID, String title,
+                                 String message, String imageURL, String channelId,
+                                 Intent intent, int pendingIntentFlag) {
+        NotificationManager notificationManager = getNotificationManager(context);
+        String appName = ResourceUtils.getString(R.string.app_name);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getNotificationChannel(notificationManager, appName);
+        }
+
+        NotificationCompat.Builder builder;
+        builder = getNotificationBuilder(context,
+                !TextUtils.isEmpty(title) ? title : appName,
+                message,
+                imageURL,
+                channelId,
+                PendingIntent.getActivity(context, NOTIFICATION_ID, intent, pendingIntentFlag));
+        if (builder != null) {
+
+            notificationManager.notify(NOTIFICATION_ID, builder.build());
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void getNotificationChannel(NotificationManager notificationManager, String appName) {
+        String id = ResourceUtils.getString(R.string.app_name);
+
+        // The user-visible name of the channel.
+        String channelName = ResourceUtils.getString(R.string.app_name);
+
+        // The user-visible description of the channel.
+        String channelDescription = ResourceUtils.getString(R.string.app_name) + appName;
+
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel mChannel = new NotificationChannel(id, channelName, importance);
+
+        // Configure the notification channel.
+        mChannel.setDescription(channelDescription);
+        mChannel.enableLights(true);
+
+        // Sets the notification light color for notifications posted to this
+        // channel, if the device supports this feature.
+        mChannel.setLightColor(Color.RED);
+        mChannel.enableVibration(true);
+        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        notificationManager.createNotificationChannel(mChannel);
+    }
+}

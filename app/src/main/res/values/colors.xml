@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#43bccd</color>
+    <color name="colorPrimaryDark">@color/white</color>
+    <color name="colorPrimaryDark2">#3dabbb</color>
+    <color name="colorChatMe">#C4F1F7</color>
+    <!--
+    <color name="colorAccent">#00c853</color>-->
+    <color name="colorAccent">@color/colorPrimary</color>
+    <color name="colorHighlight">#f0513c</color>
+    <color name="colorText">#222824</color>
+    <color name="colorTextFade">#88837F</color>
+    <color name="colorTextBright">#fff</color>
+
+
+
+    <array name="mdcolor_900">
+        <item name="light_blue_800" type="color">#0277bd</item>
+        <item name="yellow_900" type="color">#f57f17</item>
+        <item name="pink_900" type="color">#880e4f</item>
+        <item name="red_900" type="color">#b0120a</item>
+        <item name="light_blue_900" type="color">#01579b</item>
+        <item name="cyan_900" type="color">#006064</item>
+        <item name="yellow_800" type="color">#f9a825</item>
+        <item name="teal_900" type="color">#004d40</item>
+        <item name="teal_800" type="color">#00695c</item>
+        <item name="green_900" type="color">#0d5302</item>
+        <item name="light_green_900" type="color">#33691e</item>
+        <item name="lime_900" type="color">#827717</item>
+        <item name="light_green_700" type="color">#689f38</item>
+        <item name="lime_800" type="color">#9e9d24</item>
+        <item name="cyan_800" type="color">#00838f</item>
+        <item name="orange_900" type="color">#e65100</item>
+        <item name="green_800" type="color">#056f00</item>
+        <item name="deep_orange_900" type="color">#bf360c</item>
+        <item name="light_green_800" type="color">#558b2f</item>
+        <item name="blue_grey_900" type="color">#263238</item>
+    </array>
+
+
+</resources>

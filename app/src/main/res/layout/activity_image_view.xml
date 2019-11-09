@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:background="@color/black"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+<in.hoptec.anyshare.views.ZoomImageView
+    android:id="@+id/activity_image_view"
+    android:scaleType="centerInside"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="nf.co.hoptec.ayi.accounts.ImageViewer">
+
+</in.hoptec.anyshare.views.ZoomImageView>
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+
+        android:layout_alignParentTop="true"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/transparent"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+
+
+
+</RelativeLayout>
